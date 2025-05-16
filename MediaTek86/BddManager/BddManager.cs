@@ -46,6 +46,7 @@ namespace MediaTek86.bddmanager
             return instance;
             }
 
+
         /// <summary>
         /// Exécution d'une requête de type LCT (begin transaction, commit, rollback)
         /// </summary>
@@ -64,16 +65,26 @@ namespace MediaTek86.bddmanager
         public void ReqUpdate(string stringQuery, Dictionary<string, object> parameters = null)
             {
             MySqlCommand command = new MySqlCommand(stringQuery, connection);
-            if (!(parameters is null))
+
+            if (parameters != null && parameters.Count > 0)
                 {
                 foreach (KeyValuePair<string, object> parameter in parameters)
                     {
                     command.Parameters.Add(new MySqlParameter(parameter.Key, parameter.Value));
                     }
                 }
+            else
+                {
+                Console.WriteLine("🚨 Aucun paramètre détecté !");
+                return; // Si aucun paramètre, on ne fait pas la mise à jour
+                }
+
             command.Prepare();
-            command.ExecuteNonQuery();
+
+            int rowsAffected = command.ExecuteNonQuery(); // Exécute la requête et récupère le nombre de lignes affectées
+            Console.WriteLine($"✅ Mise à jour effectuée : {rowsAffected} lignes modifiées.");
             }
+
 
         /// <summary>
         /// Execution d'une requête de type LIT (select)
@@ -104,5 +115,35 @@ namespace MediaTek86.bddmanager
             reader.Close();
             return records;
             }
+        public DataTable ReqSelectDataTable(string stringQuery, Dictionary<string, object> parameters = null)
+            {
+            DataTable dataTable = new DataTable();
+            using (MySqlCommand command = new MySqlCommand(stringQuery, connection))
+                {
+                Console.WriteLine($"🔄 Requête SQL exécutée : {stringQuery}");
+                if (parameters != null && parameters.Count > 0)
+                    {
+                    foreach (var param in parameters)
+                        {
+                        Console.WriteLine($"📌 Paramètre {param.Key} = {param.Value}");
+                        }
+                    }
+                else
+                    {
+                    Console.WriteLine("🚨 Aucun paramètre détecté !");
+                    }
+
+
+
+
+
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                    {
+                    adapter.Fill(dataTable);
+                    }
+                }
+            return dataTable;
+            }
+
         }
     }

@@ -115,7 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BddManager\BddManager.cs" />
+    <Compile Include="Controleur\Controleur.cs" />
     <Compile Include="dal\Access.cs" />
+    <Compile Include="dal\DeveloppeurAccess.cs" />
     <Compile Include="dal\PersonnelDAL.cs" />
     <Compile Include="FormAbsence.cs">
       <SubType>Form</SubType>

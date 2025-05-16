@@ -12,9 +12,13 @@ namespace MediaTek86
     {
     public partial class FormPersonnel : Form
         {
+
+
+
         public FormPersonnel()
             {
             InitializeComponent();
+            Personnel(); // Charge les données dans le DataGridView
             }
         }
     }

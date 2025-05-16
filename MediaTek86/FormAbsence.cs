@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaTek86.model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,7 @@ namespace MediaTek86
         public FormAbsence()
             {
             InitializeComponent();
+            Absence(); // Charge les données dans le DataGridView
             }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

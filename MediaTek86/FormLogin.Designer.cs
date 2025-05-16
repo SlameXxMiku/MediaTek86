@@ -1,4 +1,13 @@
-﻿namespace MediaTek86
+﻿using System.Windows.Forms;
+using System;
+using MediaTek86.dal;
+using System.Collections.Generic;
+using MediaTek86.bddmanager;
+using MediaTek86.DAL;
+using MediaTek86.Controleur;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
+namespace MediaTek86
     {
     partial class FormLogin
         {
@@ -19,6 +28,48 @@
                 }
             base.Dispose(disposing);
             }
+
+
+        private void Se_connecter_Click(object sender, EventArgs e)
+            {
+            string login = Login.Text;
+            string password = Password.Text;
+
+            // Vérification des identifiants via DAL
+            if (VerifierAuthentification(login, password))
+                {
+                this.Hide();
+                MediaTek86 mediatekForm = new MediaTek86();
+                mediatekForm.ShowDialog();
+                this.Close();
+                }
+            else
+                {
+                MessageBox.Show("Login ou mot de passe incorrect.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+        public static bool VerifierAuthentification(string login, string password)
+            {
+            return DeveloppeurAccess.ControleAuthentification(login, password);
+            }
+
+        public static bool ControleAuthentification(string login, string password)
+            {
+            string req = "SELECT * FROM developpeur WHERE nom = @login AND pwd = SHA2(@password, 256);";
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                { "@login", login },
+        { "@password", password }
+                
+
+    }; string username = login;
+            Console.WriteLine($"Authentification avec user : {username}");
+
+            List<object[]> records = Access.GetInstance().Manager.ReqSelect(req, parameters);
+            return records != null && records.Count > 0;
+            }
+
 
         #region Code généré par le Concepteur Windows Form
 
@@ -93,7 +144,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
-
+            Se_connecter.Click += new EventHandler(Se_connecter_Click);
             }
 
         #endregion

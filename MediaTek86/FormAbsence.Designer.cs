@@ -1,4 +1,17 @@
-﻿namespace MediaTek86
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MediaTek86.dal;
+using MediaTek86.DAL;
+using MediaTek86.bddmanager;
+
+namespace MediaTek86
     {
     partial class FormAbsence
         {
@@ -20,6 +33,93 @@
             base.Dispose(disposing);
             }
 
+
+
+        private void Absence()
+            {
+            string req = "SELECT * FROM absence;";
+            DataTable dataTable = Access.GetInstance().Manager.ReqSelectDataTable(req);
+
+            Console.WriteLine($"Nombre de lignes récupérées : {dataTable.Rows.Count}");
+
+            if (dataTable != null && dataTable.Rows.Count > 0)
+                {
+                dataGriedViewAbsence.DataSource = dataTable;
+                }
+            else
+                {
+                MessageBox.Show("La table 'personnel' est vide ou les données ne sont pas chargées !");
+                }
+            }
+        private void btn_save_Click(object sender, EventArgs e)
+            {
+            dataGriedViewAbsence.EndEdit(); // Force la validation des modifications
+            DataTable changes = ((DataTable)dataGriedViewAbsence.DataSource).GetChanges();
+
+            if (changes == null || changes.Rows.Count == 0)
+                {
+                Console.WriteLine("🚨 Aucune modification détectée !");
+                MessageBox.Show("Aucune modification détectée !");
+                return;
+                }
+
+            foreach (DataRow row in changes.Rows)
+                {
+                if (row.RowState == DataRowState.Added) //  Gestion des nouvelles entrées
+                    {
+                    string req = "INSERT INTO absence (idpersonnel, datedebut, datefin, idmotif) VALUES (@idpersonnel, @datedebut, @datefin, @idmotif);";
+                    Dictionary<string, object> parameters = new Dictionary<string, object>
+     {
+         { "@idpersonnel", row["idpersonnel"] },
+         { "@datedebut", row["datedebut"] },
+         { "@datefin", row["datefin"] },
+         { "@idmotif", row["idmotif"] },
+     };
+
+                    Console.WriteLine($" Ajout d'une nouvelle absence : {row["datedebut"]} {row["datefin"]}");
+                    Access.GetInstance().Manager.ReqUpdate(req, parameters);
+
+                    // 🔄 Récupérer l'ID généré et le mettre à jour dans DataGridView
+                    string idQuery = "SELECT LAST_INSERT_ID();";
+                    DataTable idResult = Access.GetInstance().Manager.ReqSelectDataTable(idQuery);
+
+                    if (idResult != null && idResult.Rows.Count > 0)
+                        {
+                        row["idpersonnel"] = Convert.ToInt32(idResult.Rows[0][0]); // Met à jour le `idpersonnel` dans DataGridView
+                        Console.WriteLine($" ID récupéré et assigné : {row["idpersonnel"]}");
+                        }
+                    }
+                else if (row.RowState == DataRowState.Modified) //  Gestion des modifications
+                    {
+                    string req = "UPDATE absence SET idpersonnel = @idpersonnel, datedebut = @datedebut, datefin = @datefin, idmotif = @idmotif;";
+                    Dictionary<string, object> parameters = new Dictionary<string, object>
+     {
+         { "@idpersonnel", row["idpersonnel"] },
+         { "@datedebut", row["datedebut"] },
+         { "@datefin", row["datefin"] },
+         { "@idmotif", row["idmotif"] },
+     };
+
+                    Console.WriteLine($" Mise à jour du personnel : ID {row["idpersonnel"]}");
+                    Access.GetInstance().Manager.ReqUpdate(req, parameters);
+                    }
+                else if (row.RowState == DataRowState.Deleted) // Gestion des suppressions
+                    {
+                    string req = "DELETE FROM absence WHERE idpersonnel = @idpersonnel;";
+                    Dictionary<string, object> parameters = new Dictionary<string, object>
+     {
+         { "@idpersonnel", row["idpersonnel", DataRowVersion.Original] } // Récupère l'ID d'origine avant suppression
+     };
+
+                    Console.WriteLine($" Suppression du personnel : ID {row["idpersonnel", DataRowVersion.Original]}");
+                    Access.GetInstance().Manager.ReqUpdate(req, parameters);
+                    }
+                }
+
+            MessageBox.Show("Modifications enregistrées avec succès !");
+            ((DataTable)dataGriedViewAbsence.DataSource).AcceptChanges(); // Valide les modifications localement
+            Absence(); // Recharge les données actualisées
+            }
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -31,9 +131,7 @@
             this.btn_personnel = new System.Windows.Forms.Button();
             this.btn_Absence = new System.Windows.Forms.Button();
             this.dataGriedViewAbsence = new System.Windows.Forms.DataGridView();
-            this.btn_add_personnel = new System.Windows.Forms.Button();
-            this.btn_del_personnel = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.btn_save = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGriedViewAbsence)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,36 +168,23 @@
             this.dataGriedViewAbsence.TabIndex = 5;
             this.dataGriedViewAbsence.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGriedViewAbsence_CellContentClick);
             // 
-            // btn_add_personnel
+            // btn_save
             // 
-            this.btn_add_personnel.BackColor = System.Drawing.Color.LimeGreen;
-            this.btn_add_personnel.Location = new System.Drawing.Point(0, 131);
-            this.btn_add_personnel.Name = "btn_add_personnel";
-            this.btn_add_personnel.Size = new System.Drawing.Size(210, 183);
-            this.btn_add_personnel.TabIndex = 6;
-            this.btn_add_personnel.Text = "Ajouter Absence";
-            this.btn_add_personnel.UseVisualStyleBackColor = false;
-            // 
-            // btn_del_personnel
-            // 
-            this.btn_del_personnel.BackColor = System.Drawing.Color.Red;
-            this.btn_del_personnel.Location = new System.Drawing.Point(0, 314);
-            this.btn_del_personnel.Name = "btn_del_personnel";
-            this.btn_del_personnel.Size = new System.Drawing.Size(210, 183);
-            this.btn_del_personnel.TabIndex = 7;
-            this.btn_del_personnel.Text = "Supprimer Absence";
-            this.btn_del_personnel.UseVisualStyleBackColor = false;
-            // 
-            // button3
-            // 
-            this.button3.BackColor = System.Drawing.Color.Blue;
-            this.button3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button3.Location = new System.Drawing.Point(0, 497);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(210, 183);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Modifier Absence";
-            this.button3.UseVisualStyleBackColor = false;
+            this.btn_save = new System.Windows.Forms.Button();
+            this.btn_save.Text = "Enregistrer";
+            this.btn_save.Location = new System.Drawing.Point(520, 600);
+            this.btn_save.Size = new System.Drawing.Size(150, 50);
+            this.Controls.Add(this.btn_save);
+            this.btn_save.Click += new System.EventHandler(this.btn_save_Click);
+
+            this.btn_save.BackColor = System.Drawing.Color.DarkGreen;
+            this.btn_save.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.btn_save.Location = new System.Drawing.Point(0, 133);
+            this.btn_save.Name = "btn_save";
+            this.btn_save.Size = new System.Drawing.Size(210, 547);
+            this.btn_save.TabIndex = 9;
+            this.btn_save.Text = "Enregistrer les modifications";
+            this.btn_save.UseVisualStyleBackColor = false;
             // 
             // FormAbsence
             // 
@@ -107,9 +192,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Firebrick;
             this.ClientSize = new System.Drawing.Size(1264, 681);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.btn_del_personnel);
-            this.Controls.Add(this.btn_add_personnel);
+            this.Controls.Add(this.btn_save);
             this.Controls.Add(this.dataGriedViewAbsence);
             this.Controls.Add(this.btn_Absence);
             this.Controls.Add(this.btn_personnel);
@@ -124,8 +207,6 @@
         private System.Windows.Forms.Button btn_personnel;
         private System.Windows.Forms.Button btn_Absence;
         private System.Windows.Forms.DataGridView dataGriedViewAbsence;
-        private System.Windows.Forms.Button btn_add_personnel;
-        private System.Windows.Forms.Button btn_del_personnel;
-        private System.Windows.Forms.Button button3;
+        private Button btn_save;
         }
     }
