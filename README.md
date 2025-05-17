@@ -24,4 +24,4 @@ Une fois les modifications fini , cliquez sur le boutons "Enregistrer les modifi
 Même principe pour la table Absence.
 
 Pour plus d'info , Veuillez consulter cette vidéo:
-![video](https://youtu.be/6klEIqKdjto)
+![regarder la video](https://youtu.be/6klEIqKdjto)
