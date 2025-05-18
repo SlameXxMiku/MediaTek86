@@ -75,14 +75,14 @@ namespace MediaTek86.bddmanager
                 }
             else
                 {
-                Console.WriteLine("🚨 Aucun paramètre détecté !");
+                Console.WriteLine(" Aucun paramètre détecté !");
                 return; // Si aucun paramètre, on ne fait pas la mise à jour
                 }
 
             command.Prepare();
 
             int rowsAffected = command.ExecuteNonQuery(); // Exécute la requête et récupère le nombre de lignes affectées
-            Console.WriteLine($"✅ Mise à jour effectuée : {rowsAffected} lignes modifiées.");
+            Console.WriteLine($" Mise à jour effectuée : {rowsAffected} lignes modifiées.");
             }
 
 
@@ -120,17 +120,17 @@ namespace MediaTek86.bddmanager
             DataTable dataTable = new DataTable();
             using (MySqlCommand command = new MySqlCommand(stringQuery, connection))
                 {
-                Console.WriteLine($"🔄 Requête SQL exécutée : {stringQuery}");
+                Console.WriteLine($" Requête SQL exécutée : {stringQuery}");
                 if (parameters != null && parameters.Count > 0)
                     {
                     foreach (var param in parameters)
                         {
-                        Console.WriteLine($"📌 Paramètre {param.Key} = {param.Value}");
+                        Console.WriteLine($" Paramètre {param.Key} = {param.Value}");
                         }
                     }
                 else
                     {
-                    Console.WriteLine("🚨 Aucun paramètre détecté !");
+                    Console.WriteLine(" Aucun paramètre détecté !");
                     }
 
 

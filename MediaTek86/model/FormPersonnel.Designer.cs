@@ -13,8 +13,12 @@ using MediaTek86.bddmanager;
 
 namespace MediaTek86
     {
-    partial class FormAbsence
+
+    partial class FormPersonnel
         {
+    
+
+
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -33,18 +37,31 @@ namespace MediaTek86
             base.Dispose(disposing);
             }
 
-
-
-        private void Absence()
+        private void btn_personnel_Click(object sender, EventArgs e)
             {
-            string req = "SELECT * FROM absence;";
+            FormPersonnel personnelForm = new FormPersonnel();
+            personnelForm.ShowDialog();
+            this.Hide();
+            }
+        private void btn_absence_Click(object sender, EventArgs e)
+            {
+            FormAbsence absenceForm = new FormAbsence();
+            absenceForm.ShowDialog();
+            this.Hide();
+            }
+
+
+
+        private void Personnel()
+            {
+            string req = "SELECT * FROM personnel;";
             DataTable dataTable = Access.GetInstance().Manager.ReqSelectDataTable(req);
 
             Console.WriteLine($"Nombre de lignes récupérées : {dataTable.Rows.Count}");
 
             if (dataTable != null && dataTable.Rows.Count > 0)
                 {
-                dataGriedViewAbsence.DataSource = dataTable;
+                dataGriedViewPersonnel.DataSource = dataTable;
                 }
             else
                 {
@@ -53,8 +70,8 @@ namespace MediaTek86
             }
         private void btn_save_Click(object sender, EventArgs e)
             {
-            dataGriedViewAbsence.EndEdit(); // Force la validation des modifications
-            DataTable changes = ((DataTable)dataGriedViewAbsence.DataSource).GetChanges();
+            dataGriedViewPersonnel.EndEdit(); // Force la validation des modifications
+            DataTable changes = ((DataTable)dataGriedViewPersonnel.DataSource).GetChanges();
 
             if (changes == null || changes.Rows.Count == 0)
                 {
@@ -67,19 +84,20 @@ namespace MediaTek86
                 {
                 if (row.RowState == DataRowState.Added) //  Gestion des nouvelles entrées
                     {
-                    string req = "INSERT INTO absence (idpersonnel, datedebut, datefin, idmotif) VALUES (@idpersonnel, @datedebut, @datefin, @idmotif);";
+                    string req = "INSERT INTO personnel (nom, prenom, tel, mail, idservice) VALUES (@nom, @prenom, @tel, @mail, @idservice);";
                     Dictionary<string, object> parameters = new Dictionary<string, object>
-     {
-         { "@idpersonnel", row["idpersonnel"] },
-         { "@datedebut", row["datedebut"] },
-         { "@datefin", row["datefin"] },
-         { "@idmotif", row["idmotif"] },
-     };
+            {
+                { "@nom", row["nom"] },
+                { "@prenom", row["prenom"] },
+                { "@tel", row["tel"] },
+                { "@mail", row["mail"] },
+                { "@idservice", row["idservice"] }
+            };
 
-                    Console.WriteLine($" Ajout d'une nouvelle absence : {row["datedebut"]} {row["datefin"]}");
+                    Console.WriteLine($" Ajout d'un nouveau personnel : {row["nom"]} {row["prenom"]}");
                     Access.GetInstance().Manager.ReqUpdate(req, parameters);
 
-                    // 🔄 Récupérer l'ID généré et le mettre à jour dans DataGridView
+                    //  Récupérer l'ID généré et le mettre à jour dans DataGridView
                     string idQuery = "SELECT LAST_INSERT_ID();";
                     DataTable idResult = Access.GetInstance().Manager.ReqSelectDataTable(idQuery);
 
@@ -91,35 +109,45 @@ namespace MediaTek86
                     }
                 else if (row.RowState == DataRowState.Modified) //  Gestion des modifications
                     {
-                    string req = "UPDATE absence SET idpersonnel = @idpersonnel, datedebut = @datedebut, datefin = @datefin, idmotif = @idmotif;";
+                    string req = "UPDATE personnel SET nom = @nom, prenom = @prenom, tel = @tel, mail = @mail, idservice = @idservice WHERE idpersonnel = @idpersonnel;";
                     Dictionary<string, object> parameters = new Dictionary<string, object>
-     {
-         { "@idpersonnel", row["idpersonnel"] },
-         { "@datedebut", row["datedebut"] },
-         { "@datefin", row["datefin"] },
-         { "@idmotif", row["idmotif"] },
-     };
+            {
+                { "@idpersonnel", row["idpersonnel"] },
+                { "@nom", row["nom"] },
+                { "@prenom", row["prenom"] },
+                { "@tel", row["tel"] },
+                { "@mail", row["mail"] },
+                { "@idservice", row["idservice"] }
+            };
 
                     Console.WriteLine($" Mise à jour du personnel : ID {row["idpersonnel"]}");
                     Access.GetInstance().Manager.ReqUpdate(req, parameters);
                     }
-                else if (row.RowState == DataRowState.Deleted) // Gestion des suppressions
+                else if (row.RowState == DataRowState.Deleted) //  Gestion des suppressions
                     {
-                    string req = "DELETE FROM absence WHERE idpersonnel = @idpersonnel;";
+                    string req = "DELETE FROM personnel WHERE idpersonnel = @idpersonnel;";
                     Dictionary<string, object> parameters = new Dictionary<string, object>
-     {
-         { "@idpersonnel", row["idpersonnel", DataRowVersion.Original] } // Récupère l'ID d'origine avant suppression
-     };
+            {
+                { "@idpersonnel", row["idpersonnel", DataRowVersion.Original] } // Récupère l'ID d'origine avant suppression
+            };
 
                     Console.WriteLine($" Suppression du personnel : ID {row["idpersonnel", DataRowVersion.Original]}");
                     Access.GetInstance().Manager.ReqUpdate(req, parameters);
                     }
                 }
 
-            MessageBox.Show("Modifications enregistrées avec succès !");
-            ((DataTable)dataGriedViewAbsence.DataSource).AcceptChanges(); // Valide les modifications localement
-            Absence(); // Recharge les données actualisées
+            MessageBox.Show(" Modifications enregistrées avec succès !");
+            ((DataTable)dataGriedViewPersonnel.DataSource).AcceptChanges(); // Valide les modifications localement
+            Personnel(); // Recharge les données actualisées
             }
+
+
+
+
+
+
+
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -130,9 +158,9 @@ namespace MediaTek86
             {
             this.btn_personnel = new System.Windows.Forms.Button();
             this.btn_Absence = new System.Windows.Forms.Button();
-            this.dataGriedViewAbsence = new System.Windows.Forms.DataGridView();
             this.btn_save = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGriedViewAbsence)).BeginInit();
+            this.dataGriedViewPersonnel = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGriedViewPersonnel)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_personnel
@@ -142,9 +170,10 @@ namespace MediaTek86
             this.btn_personnel.Margin = new System.Windows.Forms.Padding(0);
             this.btn_personnel.Name = "btn_personnel";
             this.btn_personnel.Size = new System.Drawing.Size(640, 130);
-            this.btn_personnel.TabIndex = 2;
+            this.btn_personnel.TabIndex = 3;
             this.btn_personnel.Text = "Personnel";
             this.btn_personnel.UseVisualStyleBackColor = false;
+            this.btn_personnel.Click += new System.EventHandler(this.btn_personnel_Click);
             // 
             // btn_Absence
             // 
@@ -154,22 +183,16 @@ namespace MediaTek86
             this.btn_Absence.Margin = new System.Windows.Forms.Padding(0);
             this.btn_Absence.Name = "btn_Absence";
             this.btn_Absence.Size = new System.Drawing.Size(624, 130);
-            this.btn_Absence.TabIndex = 3;
+            this.btn_Absence.TabIndex = 4;
             this.btn_Absence.Text = "Absence";
             this.btn_Absence.UseVisualStyleBackColor = false;
-            // 
-            // dataGriedViewAbsence
-            // 
-            this.dataGriedViewAbsence.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.dataGriedViewAbsence.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGriedViewAbsence.Location = new System.Drawing.Point(210, 131);
-            this.dataGriedViewAbsence.Name = "dataGriedViewAbsence";
-            this.dataGriedViewAbsence.Size = new System.Drawing.Size(1054, 550);
-            this.dataGriedViewAbsence.TabIndex = 5;
-            this.dataGriedViewAbsence.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGriedViewAbsence_CellContentClick);
+            this.btn_Absence.Click += new System.EventHandler(this.btn_absence_Click);
             // 
             // btn_save
             // 
+    
+
+
             this.btn_save = new System.Windows.Forms.Button();
             this.btn_save.Text = "Enregistrer";
             this.btn_save.Location = new System.Drawing.Point(520, 600);
@@ -185,28 +208,39 @@ namespace MediaTek86
             this.btn_save.TabIndex = 9;
             this.btn_save.Text = "Enregistrer les modifications";
             this.btn_save.UseVisualStyleBackColor = false;
+            
             // 
-            // FormAbsence
+            // dataGriedViewPersonnel
+            // 
+            this.dataGriedViewPersonnel.BackgroundColor = System.Drawing.Color.RoyalBlue;
+            this.dataGriedViewPersonnel.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGriedViewPersonnel.Location = new System.Drawing.Point(209, 131);
+            this.dataGriedViewPersonnel.Name = "dataGriedViewPersonnel";
+            this.dataGriedViewPersonnel.Size = new System.Drawing.Size(1054, 550);
+            this.dataGriedViewPersonnel.TabIndex = 10;
+            // 
+            // FormPersonnel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Firebrick;
+            this.BackColor = System.Drawing.Color.MediumBlue;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.dataGriedViewPersonnel);
             this.Controls.Add(this.btn_save);
-            this.Controls.Add(this.dataGriedViewAbsence);
             this.Controls.Add(this.btn_Absence);
             this.Controls.Add(this.btn_personnel);
-            this.Name = "FormAbsence";
-            this.Text = "FormAbsence";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGriedViewAbsence)).EndInit();
+            this.Name = "FormPersonnel";
+            this.Text = "FormPersonnel";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGriedViewPersonnel)).EndInit();
             this.ResumeLayout(false);
 
             }
 
+
         #endregion
         private System.Windows.Forms.Button btn_personnel;
         private System.Windows.Forms.Button btn_Absence;
-        private System.Windows.Forms.DataGridView dataGriedViewAbsence;
-        private Button btn_save;
+        private System.Windows.Forms.Button btn_save;
+        private System.Windows.Forms.DataGridView dataGriedViewPersonnel;
         }
     }

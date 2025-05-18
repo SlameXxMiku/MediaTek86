@@ -13,9 +13,7 @@ namespace MediaTek86
     public partial class FormPersonnel : Form
         {
 
-        ///
-        ///Formulaire de gestion du personnel
-        ///
+
 
         public FormPersonnel()
             {

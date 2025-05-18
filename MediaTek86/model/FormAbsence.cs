@@ -1,4 +1,4 @@
-﻿
+﻿using MediaTek86.model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,26 +11,20 @@ using System.Windows.Forms;
 
 namespace MediaTek86
     {
-    ///
-    ///Formulaire de gestion des Absences
-    ///
     public partial class FormAbsence : Form
         {
-        ///
-        ///Formulaire de gestion des Absences
-        ///
         public FormAbsence()
             {
             InitializeComponent();
             Absence(); // Charge les données dans le DataGridView
             }
 
-        private void TextBox1_TextChanged(object sender, EventArgs e)
+        private void textBox1_TextChanged(object sender, EventArgs e)
             {
 
             }
 
-        private void DataGriedViewAbsence_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGriedViewAbsence_CellContentClick(object sender, DataGridViewCellEventArgs e)
             {
 
             }

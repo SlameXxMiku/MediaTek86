@@ -10,17 +10,21 @@ using System.Windows.Forms;
 
 namespace MediaTek86
     {
-    public partial class FormPersonnel : Form
+    public partial class FormLogin : Form
         {
-
-        ///
-        ///Formulaire de gestion du personnel
-        ///
-
-        public FormPersonnel()
+        public FormLogin()
             {
             InitializeComponent();
-            Personnel(); // Charge les données dans le DataGridView
+            }
+
+        private void Form1_Load(object sender, EventArgs e)
+            {
+
+            }
+
+        private void label1_Click(object sender, EventArgs e)
+            {
+
             }
         }
     }

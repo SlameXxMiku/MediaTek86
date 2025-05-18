@@ -13,10 +13,12 @@ using MediaTek86.bddmanager;
 
 namespace MediaTek86
     {
-
-    partial class FormPersonnel
+    ///
+    ///Formulaire de gestion du personnel
+    ///
+    partial class FormPersonnel 
         {
-    
+
 
 
         /// <summary>
@@ -75,14 +77,14 @@ namespace MediaTek86
 
             if (changes == null || changes.Rows.Count == 0)
                 {
-                Console.WriteLine("🚨 Aucune modification détectée !");
+                Console.WriteLine(" Aucune modification détectée !");
                 MessageBox.Show("Aucune modification détectée !");
                 return;
                 }
 
             foreach (DataRow row in changes.Rows)
                 {
-                if (row.RowState == DataRowState.Added) // ✅ Gestion des nouvelles entrées
+                if (row.RowState == DataRowState.Added) //  Gestion des nouvelles entrées
                     {
                     string req = "INSERT INTO personnel (nom, prenom, tel, mail, idservice) VALUES (@nom, @prenom, @tel, @mail, @idservice);";
                     Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -94,20 +96,20 @@ namespace MediaTek86
                 { "@idservice", row["idservice"] }
             };
 
-                    Console.WriteLine($"✅ Ajout d'un nouveau personnel : {row["nom"]} {row["prenom"]}");
+                    Console.WriteLine($" Ajout d'un nouveau personnel : {row["nom"]} {row["prenom"]}");
                     Access.GetInstance().Manager.ReqUpdate(req, parameters);
 
-                    // 🔄 Récupérer l'ID généré et le mettre à jour dans DataGridView
+                    //  Récupérer l'ID généré et le mettre à jour dans DataGridView
                     string idQuery = "SELECT LAST_INSERT_ID();";
                     DataTable idResult = Access.GetInstance().Manager.ReqSelectDataTable(idQuery);
 
                     if (idResult != null && idResult.Rows.Count > 0)
                         {
                         row["idpersonnel"] = Convert.ToInt32(idResult.Rows[0][0]); // Met à jour le `idpersonnel` dans DataGridView
-                        Console.WriteLine($"🔄 ID récupéré et assigné : {row["idpersonnel"]}");
+                        Console.WriteLine($" ID récupéré et assigné : {row["idpersonnel"]}");
                         }
                     }
-                else if (row.RowState == DataRowState.Modified) // ✅ Gestion des modifications
+                else if (row.RowState == DataRowState.Modified) //  Gestion des modifications
                     {
                     string req = "UPDATE personnel SET nom = @nom, prenom = @prenom, tel = @tel, mail = @mail, idservice = @idservice WHERE idpersonnel = @idpersonnel;";
                     Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -120,10 +122,10 @@ namespace MediaTek86
                 { "@idservice", row["idservice"] }
             };
 
-                    Console.WriteLine($"🔄 Mise à jour du personnel : ID {row["idpersonnel"]}");
+                    Console.WriteLine($" Mise à jour du personnel : ID {row["idpersonnel"]}");
                     Access.GetInstance().Manager.ReqUpdate(req, parameters);
                     }
-                else if (row.RowState == DataRowState.Deleted) // ✅ Gestion des suppressions
+                else if (row.RowState == DataRowState.Deleted) //  Gestion des suppressions
                     {
                     string req = "DELETE FROM personnel WHERE idpersonnel = @idpersonnel;";
                     Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -131,12 +133,12 @@ namespace MediaTek86
                 { "@idpersonnel", row["idpersonnel", DataRowVersion.Original] } // Récupère l'ID d'origine avant suppression
             };
 
-                    Console.WriteLine($"🗑️ Suppression du personnel : ID {row["idpersonnel", DataRowVersion.Original]}");
+                    Console.WriteLine($" Suppression du personnel : ID {row["idpersonnel", DataRowVersion.Original]}");
                     Access.GetInstance().Manager.ReqUpdate(req, parameters);
                     }
                 }
 
-            MessageBox.Show("✅ Modifications enregistrées avec succès !");
+            MessageBox.Show(" Modifications enregistrées avec succès !");
             ((DataTable)dataGriedViewPersonnel.DataSource).AcceptChanges(); // Valide les modifications localement
             Personnel(); // Recharge les données actualisées
             }

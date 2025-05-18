@@ -166,7 +166,7 @@ namespace MediaTek86
             this.dataGriedViewAbsence.Name = "dataGriedViewAbsence";
             this.dataGriedViewAbsence.Size = new System.Drawing.Size(1054, 550);
             this.dataGriedViewAbsence.TabIndex = 5;
-            this.dataGriedViewAbsence.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGriedViewAbsence_CellContentClick);
+            this.dataGriedViewAbsence.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGriedViewAbsence_CellContentClick);
             // 
             // btn_save
             // 
